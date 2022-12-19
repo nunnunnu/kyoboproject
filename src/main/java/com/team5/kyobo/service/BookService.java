@@ -54,4 +54,19 @@ public class BookService {
         }
         return map;
     }
+
+    public Map<String, Object> bookBestList(Pageable page){
+        Map<String, Object> map = new LinkedHashMap<>();
+        if(bookRepo.count()==0){
+            map.put("status", false);
+            map.put("message", "아직 등록된 책이 존재하지않습니다.");
+            map.put("code", HttpStatus.NO_CONTENT); 
+        }else{
+            map.put("status", true);
+            map.put("message", "베스트 리스트 조회를 성공했습니다.");
+            map.put("list", bookRepo.findAllByOrderBySalesDesc(page));
+            map.put("code", HttpStatus.OK); 
+        }
+        return map;
+    }
 }
