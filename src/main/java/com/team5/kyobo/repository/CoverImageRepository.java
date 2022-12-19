@@ -7,5 +7,6 @@ import com.team5.kyobo.entity.CoverImageEntity;
 
 @Repository
 public interface CoverImageRepository extends JpaRepository<CoverImageEntity, Long> {
+    CoverImageEntity findByCoverUri(String uri);
     
 }

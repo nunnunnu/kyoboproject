@@ -20,6 +20,6 @@ public class CoverImageEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ci_seq") private Long coverImageSeq;
     @Column(name = "ci_path") private String coverImage;
-    @Column(name = "ci_bi_seq") private Long BookSeq;
-    @Column(name = "ci_uri") private String CoverUri;
+    @Column(name = "ci_bi_seq") private Long bookSeq;
+    @Column(name = "ci_uri") private String coverUri;
 }
