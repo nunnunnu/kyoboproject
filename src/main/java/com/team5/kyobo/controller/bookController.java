@@ -22,6 +22,14 @@ public class bookController {
     @Autowired BookService bService;
     @Autowired ReviewService rService;
 
+    @GetMapping("/list")
+    public ResponseEntity<Object> detailBookInfo(
+        @PageableDefault(size=10, sort="sales",direction = Sort.Direction.DESC)  final Pageable page
+    ){
+        Map<String, Object> map = bService.bookBestList(page);
+        return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
+    }
+    
     @GetMapping("/detail")
     public ResponseEntity<Object> detailBookInfo(@RequestParam Long seq,
         @PageableDefault(size=5, sort="reviewDate",direction = Sort.Direction.DESC)  final Pageable page
