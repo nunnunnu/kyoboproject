@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.team5.kyobo.repository.ReviewViewRepository;
 import com.team5.kyobo.service.BookService;
 import com.team5.kyobo.service.ReviewService;
 
@@ -61,7 +62,7 @@ public class bookController {
         map.put("message", "책 정보가 등록되었습니다.");
         return map;
     }
-     @GetMapping("/list")
+    @GetMapping("/list")
     public ResponseEntity<Object> detailBookInfo(
         @PageableDefault(size=10, sort="sales",direction = Sort.Direction.DESC)  final Pageable page
     ){

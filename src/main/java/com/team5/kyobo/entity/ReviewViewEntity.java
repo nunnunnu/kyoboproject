@@ -11,6 +11,8 @@ import javax.persistence.Table;
 
 import org.springframework.data.annotation.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
 public class ReviewViewEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ri_seq") private Long reviewSeq;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     @Column(name = "ri_date") private Date reviewDate;
     @Column(name = "ri_content") private String reviewContent;
     @Column(name = "ri_score") private Integer reviewSroce;
