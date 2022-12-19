@@ -75,12 +75,12 @@ public class BookService {
         }else{
             map.put("status", true);
             map.put("message", "베스트 리스트 조회를 성공했습니다.");
-            map.put("list", bookRepo.findAllByOrderBySalesDesc(page));
+            map.put("list", bookRepo.findAll(page));
             map.put("code", HttpStatus.OK); 
         }
         return map;
     }
-}
+
 
 
     public void addBookInfo(
