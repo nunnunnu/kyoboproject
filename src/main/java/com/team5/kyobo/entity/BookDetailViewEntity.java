@@ -1,4 +1,4 @@
-package com.team5.kyobo.view;
+package com.team5.kyobo.entity;
 
 import java.util.Date;
 
