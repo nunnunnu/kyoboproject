@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Immutable //뷰랑 연결할때 입력을 막기위해 넣어주는 어노테이션
 @Table(name = "review_info_view")
-public class ReviewEntity {
+public class ReviewViewEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ri_seq") private Long reviewSeq;
     @Column(name = "ri_date") private Date reviewDate;
