@@ -4,9 +4,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,9 +18,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.team5.kyobo.entity.CoverImageEntity;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -25,37 +32,65 @@ import org.springframework.core.io.UrlResource;
 public class FileAPIController {
     // 파일 업로드, 다운로드는 어느 프로젝프든 거의 동일함. 복붙추천
     @Value("${file.image.cover}") String cover_img_path; //springframework.beans임
-    @Value("${file.image.introduce}") String intro_img_path; 
+    @Value("${file.image.introduce}") String intro_img_path;
     //이것도 DI임. 이미지 파일의 경로가 바뀌어도 application.properties만 고쳐주면 됨
+    // @Autowired TodoInfoService tService;
+    // @Autowired MemberService mService;
 
-    @PutMapping("/{type}/upload") //todo이미지를 올릴것인지 file이미지를 올릴것인지
-    public ResponseEntity<Object> putImageUpload(
-        @PathVariable String type,
-        @RequestPart MultipartFile file //파일을 받는 객체. postman에 file이라고 변수 그대로 적어주어야함
-        ){
-            Map<String, Object> map = new LinkedHashMap<>();
-            System.out.println(file.getOriginalFilename()); //업로드 할 파일의 원본이름 확장자까지 출력
-            //Path - 폴더 및 파일의 위치를 나타내는 객체, Paths - 폴더 및 파일을 가져오고 경로를 만들기 위한 파일 유틸리티 클래스
-            Path folderLocation = null; //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
-            if(type.equals("cover")){
-                folderLocation = Paths.get(cover_img_path);
-                
-            }else if(type.equals("intro")){
-                folderLocation = Paths.get(intro_img_path);
-            }else{
-                map.put("status", false);
-                map.put("message", "타입정보가 잘못되었습니다. ex:/cover/upload, /intro/upload");
-                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
-            }
-            Path targerFile = folderLocation.resolve(file.getOriginalFilename()); //폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로 생성
-            try{
-                //Files는 파일 처리에 대한 유틸리티 클래스
-                //copy - 복사, file.getInputStream() - 파일을 열어서 파일의 내용을 읽는 준비
-                //targetFile 경로로, standardCopyOption.REPLACE_EXISTING - 같은 파일이 있다면 덮어쓰기.
-                Files.copy(file.getInputStream(), targerFile, StandardCopyOption.REPLACE_EXISTING); 
-            }catch(Exception e){e.printStackTrace();}
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        } //파일 업로드 메소드
+    // @PutMapping("/{type}/upload") //todo이미지를 올릴것인지 file이미지를 올릴것인지
+    // public ResponseEntity < Object > putImageUpload(
+    //     @PathVariable String type,
+    //     @RequestPart MultipartFile file, //파일을 받는 객체. postman에 file이라고 변수 그대로 적어주어야함
+    //     @RequestParam Long seq
+    // ) {
+    //     Map < String, Object > map = new LinkedHashMap < > ();
+    //     System.out.println(file.getOriginalFilename()); //업로드 할 파일의 원본이름 확장자까지 출력
+    //     //Path - 폴더 및 파일의 위치를 나타내는 객체, Paths - 폴더 및 파일을 가져오고 경로를 만들기 위한 파일 유틸리티 클래스
+    //     Path folderLocation = null; //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
+    //     if (type.equals("cover")) {
+    //         folderLocation = Paths.get(cover_img_path);
+            
+    //     } else if (type.equals("intro")) {
+    //         folderLocation = Paths.get(intro_img_path);
+    //     } else {
+    //         map.put("status", false);
+    //         map.put("message", "타입정보가 잘못되었습니다. ex:/cover/upload, /intro/upload");
+    //         return new ResponseEntity < > (map, HttpStatus.BAD_REQUEST);
+    //     }
+    //     String originFileName = file.getOriginalFilename();
+    //     String[] split = originFileName.split(("\\.")); //.을 기준으로 나눔
+    //     String ext = split[split.length - 1]; //확장자
+    //     String fileName = "";
+    //     for (int i = 0; i < split.length - 1; i++) {
+    //         fileName += split[i]; //원래 split[i]+"." 이렇게 해줘야함
+    //     }
+    //     String saveFileName = type + "_"; //보통 원본 이름을 저장하는것이아니라 시간대를 입력함
+    //     Calendar c = Calendar.getInstance();
+    //     saveFileName += c.getTimeInMillis() + "." + ext; // todo_161310135.png 이런식으로 저장됨
+
+    //     Path targetFile = folderLocation.resolve(saveFileName); //폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로 생성
+    //     try {
+    //         //Files는 파일 처리에 대한 유틸리티 클래스
+    //         //copy - 복사, file.getInputStream() - 파일을 열어서 파일의 내용을 읽는 준비
+    //         //targetFile 경로로, standardCopyOption.REPLACE_EXISTING - 같은 파일이 있다면 덮어쓰기.
+    //         Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    //     if (type.equals("todo")) {
+    //         CoverImageEntity data = new CoverImageEntity();
+    //         data.setFileName(saveFileName);
+    //         data.setUri(fileName);
+    //         tService.addTodoImage(data, seq);
+    //     } else if (type.equals("cover")) {
+    //         CoverImageEntity data = new CoverImageEntity();
+    //         data.setFileName(saveFileName);
+    //         data.setUri(fileName);
+    //         mService.addMemberImage(data, seq);
+
+    //     }
+    //     return new ResponseEntity < > (map, HttpStatus.OK);
+    // } //파일 업로드 메소드
 
         @GetMapping("/image/{filename}")
         public ResponseEntity<Resource> putImageUpload( //core.io.Resource import해야함
