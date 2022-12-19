@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.team5.kyobo.entity.BookInfoEntity;
 @Repository
 public interface BookInfoRepository extends JpaRepository<BookInfoEntity, Long> {
-    
+
 }
