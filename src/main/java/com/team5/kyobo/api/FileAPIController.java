@@ -25,7 +25,7 @@ import org.springframework.core.io.UrlResource;
 public class FileAPIController {
     // 파일 업로드, 다운로드는 어느 프로젝프든 거의 동일함. 복붙추천
     @Value("${file.image.cover}") String cover_img_path; //springframework.beans임
-    @Value("${file.image.intro}") String intro_img_path; 
+    @Value("${file.image.introduce}") String intro_img_path; 
     //이것도 DI임. 이미지 파일의 경로가 바뀌어도 application.properties만 고쳐주면 됨
 
     @PutMapping("/{type}/upload") //todo이미지를 올릴것인지 file이미지를 올릴것인지
