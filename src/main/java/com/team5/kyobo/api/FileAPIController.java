@@ -24,8 +24,8 @@ import org.springframework.core.io.UrlResource;
 @RestController
 public class FileAPIController {
     // 파일 업로드, 다운로드는 어느 프로젝프든 거의 동일함. 복붙추천
-    @Value("${file.image.todo}") String todo_img_path; //springframework.beans임
-    @Value("${file.image.member}") String member_img_path; 
+    @Value("${file.image.cover}") String cover_img_path; //springframework.beans임
+    @Value("${file.image.intro}") String intro_img_path; 
     //이것도 DI임. 이미지 파일의 경로가 바뀌어도 application.properties만 고쳐주면 됨
 
     @PutMapping("/{type}/upload") //todo이미지를 올릴것인지 file이미지를 올릴것인지
@@ -37,14 +37,14 @@ public class FileAPIController {
             System.out.println(file.getOriginalFilename()); //업로드 할 파일의 원본이름 확장자까지 출력
             //Path - 폴더 및 파일의 위치를 나타내는 객체, Paths - 폴더 및 파일을 가져오고 경로를 만들기 위한 파일 유틸리티 클래스
             Path folderLocation = null; //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
-            if(type.equals("todo")){
-                folderLocation = Paths.get(todo_img_path);
+            if(type.equals("cover")){
+                folderLocation = Paths.get(cover_img_path);
                 
-            }else if(type.equals("member")){
-                folderLocation = Paths.get(member_img_path);
+            }else if(type.equals("intro")){
+                folderLocation = Paths.get(intro_img_path);
             }else{
                 map.put("status", false);
-                map.put("message", "타입정보가 잘못되었습니다. ex:/todo/upload, /member/upload");
+                map.put("message", "타입정보가 잘못되었습니다. ex:/cover/upload, /intro/upload");
                 return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
             }
             Path targerFile = folderLocation.resolve(file.getOriginalFilename()); //폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로 생성
@@ -62,7 +62,7 @@ public class FileAPIController {
         @PathVariable String filename, HttpServletRequest request
         ){
             //Path - 폴더 및 파일의 위치를 나타내는 객체, Paths - 폴더 및 파일을 가져오고 경로를 만들기 위한 파일 유틸리티 클래스
-            Path folderLocation = Paths.get(todo_img_path); //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
+            Path folderLocation = Paths.get(cover_img_path); //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
             Path targerFile = folderLocation.resolve(filename); //폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로 생성
             //다운로드 가능한 형태로 변환하기 위해 Resource객체 생성함
             Resource r = null; 
