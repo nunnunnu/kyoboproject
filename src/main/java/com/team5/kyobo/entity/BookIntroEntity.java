@@ -21,6 +21,7 @@ public class BookIntroEntity {
     @Column(name = "bii_seq") private Long introImageSeq;
     @Column(name = "bii_bi_seq") private Long bookSeq;
     @Column(name = "bii_image") private String introImage;
+    @Column(name = "bii_uri") private String introImageUri;
     
     
 }

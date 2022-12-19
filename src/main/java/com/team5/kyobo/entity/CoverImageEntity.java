@@ -21,4 +21,5 @@ public class CoverImageEntity {
     @Column(name = "ci_seq") private Long coverImageSeq;
     @Column(name = "ci_path") private String coverImage;
     @Column(name = "ci_bi_seq") private Long BookSeq;
+    @Column(name = "ci_uri") private String CoverUri;
 }
