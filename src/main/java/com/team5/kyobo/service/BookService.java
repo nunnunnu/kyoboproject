@@ -1,18 +1,24 @@
 package com.team5.kyobo.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.team5.kyobo.entity.AutherInfoEntity;
 import com.team5.kyobo.entity.BookDetailViewEntity;
@@ -81,17 +87,52 @@ public class BookService {
         return map;
     }
 
-
+    @Value("${file.image.introduce}") String intro_img_path; //springframework.beans임
+    @Value("${file.image.cover}") String cover_img_path;
 
     public void addBookInfo(
         String autherName,
         @Nullable String translatorName,
         String pubName,
         String title, Integer price, Double discount, String delivery, Date date, Integer sales,
-        String introImage, String introText, String coverImage, String coverUri, String introUri
+        String introText, 
+        MultipartFile introFile,
+        MultipartFile coverFile
     ){
+        System.out.println(introFile.getOriginalFilename());
+        System.out.println(coverFile.getOriginalFilename());
+        Path introFolderLocation = Paths.get(intro_img_path);
+        Path coverFolderLocation = Paths.get(cover_img_path);
+
+        String introOriginFileName = introFile.getOriginalFilename();
+            String[] iFile = introOriginFileName.split(("\\.")); 
+            String iExt = iFile[iFile.length-1]; 
+            String iFileName="";
+            for(int i=0;i<iFile.length-1;i++){
+                iFileName += iFile[i]; 
+            }
+            String saveIntroFileName = "kybointro"+"_"; 
+            Calendar c = Calendar.getInstance();
+            saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
+
+        String coverOriginFileName = coverFile.getOriginalFilename();
+            String[] cFile = coverOriginFileName.split(("\\.")); 
+            String cExt = cFile[cFile.length-1]; 
+            String cFileName = "";
+            for(int i=0;i<cFile.length-1;i++){
+                cFileName += cFile[i]; 
+            }
+            String saveCoverFileName = "kybocover"+"_"; 
+            saveCoverFileName+=c.getTimeInMillis()+"."+cExt; 
+
+        Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
+        Path coverTargerFile = coverFolderLocation.resolve(coverFile.getOriginalFilename());
+        try{
+            Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
+            Files.copy(coverFile.getInputStream(), coverTargerFile, StandardCopyOption.REPLACE_EXISTING); 
+        }catch(Exception e){e.printStackTrace();}
+
         String[] split = autherName.split(";");
-        System.out.println(split.length);
         List<AutherInfoEntity> autherList = new ArrayList<AutherInfoEntity>();
         for(String name : split){
             AutherInfoEntity auther = new AutherInfoEntity();
@@ -133,8 +174,8 @@ public class BookService {
         
         BookIntroEntity image = new BookIntroEntity();
         image.setBookSeq(book.getBookSeq());
-        image.setIntroImage(introImage);
-        image.setIntroImageUri(introUri);
+        image.setIntroImage(saveIntroFileName);
+        image.setIntroImageUri(iFileName);
         image = iRepository.save(image);
 
         BookTextIntro text = new BookTextIntro();
@@ -144,8 +185,8 @@ public class BookService {
 
         CoverImageEntity cover = new CoverImageEntity();
         cover.setBookSeq(book.getBookSeq());
-        cover.setCoverImage(coverImage);
-        cover.setCoverUri(coverUri);
+        cover.setCoverImage(saveCoverFileName);
+        cover.setCoverUri(cFileName);
         cover = cRepository.save(cover);
 
     }

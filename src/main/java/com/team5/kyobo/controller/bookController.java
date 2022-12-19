@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.team5.kyobo.repository.ReviewViewRepository;
 import com.team5.kyobo.service.BookService;
 import com.team5.kyobo.service.ReviewService;
 
@@ -49,15 +50,13 @@ public class bookController {
         ,@RequestParam String delivery
         ,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date
         ,@RequestParam Integer sales
-        ,@RequestParam String introImage
         ,@RequestParam String introText
-        ,@RequestParam String coverImage
-        ,@RequestParam String introUri
-        ,@RequestParam String coverUri
+        ,@RequestPart MultipartFile introFile
+        ,@RequestPart MultipartFile coverFile
     ){
         Map<String, Object> map = new LinkedHashMap<>();
         bService.addBookInfo(autherName, translatorName, pubName, title, price, 
-            discount, delivery, date, sales, introImage, introText, coverImage, coverUri, introUri);
+            discount, delivery, date, sales, introText, introFile, coverFile);
         map.put("status", true);
         map.put("message", "책 정보가 등록되었습니다.");
         return map;
