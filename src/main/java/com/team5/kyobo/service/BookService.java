@@ -96,24 +96,29 @@ public class BookService {
         String pubName,
         String title, Integer price, Double discount, String delivery, Date date, Integer sales,
         String introText, 
-        MultipartFile introFile,
+        @Nullable MultipartFile introFile,
         MultipartFile coverFile
     ){
         System.out.println(introFile.getOriginalFilename());
         System.out.println(coverFile.getOriginalFilename());
-        Path introFolderLocation = Paths.get(intro_img_path);
         Path coverFolderLocation = Paths.get(cover_img_path);
-
-        String introOriginFileName = introFile.getOriginalFilename();
-            String[] iFile = introOriginFileName.split(("\\.")); 
-            String iExt = iFile[iFile.length-1]; 
-            String iFileName="";
-            for(int i=0;i<iFile.length-1;i++){
-                iFileName += iFile[i]; 
-            }
-            String saveIntroFileName = "kybointro"+"_"; 
-            Calendar c = Calendar.getInstance();
-            saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
+        Calendar c = Calendar.getInstance();
+        String saveIntroFileName = "kybointro"+"_"; 
+        String iFileName="";
+        if(introFile!=null){
+            Path introFolderLocation = Paths.get(intro_img_path);
+            String introOriginFileName = introFile.getOriginalFilename();
+                String[] iFile = introOriginFileName.split(("\\.")); 
+                String iExt = iFile[iFile.length-1]; 
+                for(int i=0;i<iFile.length-1;i++){
+                    iFileName += iFile[i]; 
+                }
+                saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
+                Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
+                try{
+                    Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
+                }catch(Exception e){e.printStackTrace();}
+        }
 
         String coverOriginFileName = coverFile.getOriginalFilename();
             String[] cFile = coverOriginFileName.split(("\\.")); 
@@ -125,12 +130,10 @@ public class BookService {
             String saveCoverFileName = "kybocover"+"_"; 
             saveCoverFileName+=c.getTimeInMillis()+"."+cExt; 
 
-        Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
-        Path coverTargerFile = coverFolderLocation.resolve(coverFile.getOriginalFilename());
-        try{
-            Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
-            Files.copy(coverFile.getInputStream(), coverTargerFile, StandardCopyOption.REPLACE_EXISTING); 
-        }catch(Exception e){e.printStackTrace();}
+            Path coverTargerFile = coverFolderLocation.resolve(coverFile.getOriginalFilename());
+            try{
+                Files.copy(coverFile.getInputStream(), coverTargerFile, StandardCopyOption.REPLACE_EXISTING); 
+            }catch(Exception e){e.printStackTrace();}
 
         String[] split = autherName.split(";");
         List<AutherInfoEntity> autherList = new ArrayList<AutherInfoEntity>();
@@ -171,12 +174,13 @@ public class BookService {
             bwi.setAutherSeq(a.getAutherSeq());
             bwi = wRepository.save(bwi);
         }
-        
-        BookIntroEntity image = new BookIntroEntity();
-        image.setBookSeq(book.getBookSeq());
-        image.setIntroImage(saveIntroFileName);
-        image.setIntroImageUri(iFileName);
-        image = iRepository.save(image);
+        if(introFile!=null){
+            BookIntroEntity image = new BookIntroEntity();
+            image.setBookSeq(book.getBookSeq());
+            image.setIntroImage(saveIntroFileName);
+            image.setIntroImageUri(iFileName);
+            image = iRepository.save(image);
+        }
 
         BookTextIntro text = new BookTextIntro();
         text.setBookSeq(book.getBookSeq());

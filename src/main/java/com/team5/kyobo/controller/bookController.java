@@ -51,7 +51,7 @@ public class bookController {
         ,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date
         ,@RequestParam Integer sales
         ,@RequestParam String introText
-        ,@RequestPart MultipartFile introFile
+        ,@RequestPart @Nullable MultipartFile introFile
         ,@RequestPart MultipartFile coverFile
     ){
         Map<String, Object> map = new LinkedHashMap<>();
