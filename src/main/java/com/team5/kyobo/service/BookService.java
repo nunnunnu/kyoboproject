@@ -50,7 +50,7 @@ public class BookService {
     @Autowired CoverImageRepository cRepository;
     @Autowired BookInfoRepository biRepo;
 
-    public Map<String, Object> showDetailBookInfo(Long seq, Pageable page){
+    public Map<String, Object> showDetailBookInfo(Long seq){
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         if(bookRepo.count()==0){
             map.put("status", false);

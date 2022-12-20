@@ -30,12 +30,11 @@ public class bookController {
     @Autowired ReviewService rService;
 
     @GetMapping("/detail")
-    public ResponseEntity<Object> detailBookInfo(@RequestParam Long seq,
-        @PageableDefault(size=10, sort="reviewDate",direction = Sort.Direction.DESC)  final Pageable page
+    public ResponseEntity<Object> detailBookInfo(@RequestParam Long seq
     ){
-        Map<String, Object> map = bService.showDetailBookInfo(seq, page);
+        Map<String, Object> map = bService.showDetailBookInfo(seq);
         if((boolean) map.get("status")){
-            map.put("review", rService.showReview(seq, page));
+            // map.put("review", rService.showReview(seq, page));
         }
         return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
     }
