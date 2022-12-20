@@ -99,26 +99,29 @@ public class BookService {
         @Nullable MultipartFile introFile,
         MultipartFile coverFile
     ){
-        System.out.println(introFile.getOriginalFilename());
+        System.out.println("1111111111111");
         System.out.println(coverFile.getOriginalFilename());
         Path coverFolderLocation = Paths.get(cover_img_path);
         Calendar c = Calendar.getInstance();
         String saveIntroFileName = "kybointro"+"_"; 
         String iFileName="";
+        System.out.println("aaaaa");
         if(introFile!=null){
             Path introFolderLocation = Paths.get(intro_img_path);
             String introOriginFileName = introFile.getOriginalFilename();
-                String[] iFile = introOriginFileName.split(("\\.")); 
-                String iExt = iFile[iFile.length-1]; 
-                for(int i=0;i<iFile.length-1;i++){
-                    iFileName += iFile[i]; 
-                }
-                saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
-                Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
-                try{
+            String[] iFile = introOriginFileName.split(("\\.")); 
+            String iExt = iFile[iFile.length-1]; 
+            System.out.println("bbbb");
+            for(int i=0;i<iFile.length-1;i++){
+                iFileName += iFile[i]; 
+            }
+            saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
+            Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
+            try{
                     Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
                 }catch(Exception e){e.printStackTrace();}
-        }
+            }
+            System.out.println("ccccc");
 
         String coverOriginFileName = coverFile.getOriginalFilename();
             String[] cFile = coverOriginFileName.split(("\\.")); 

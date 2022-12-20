@@ -31,7 +31,7 @@ public class bookController {
 
     @GetMapping("/detail")
     public ResponseEntity<Object> detailBookInfo(@RequestParam Long seq,
-        @PageableDefault(size=5, sort="reviewDate",direction = Sort.Direction.DESC)  final Pageable page
+        @PageableDefault(size=10, sort="reviewDate",direction = Sort.Direction.DESC)  final Pageable page
     ){
         Map<String, Object> map = bService.showDetailBookInfo(seq, page);
         if((boolean) map.get("status")){
