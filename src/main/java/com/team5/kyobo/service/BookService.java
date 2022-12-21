@@ -99,31 +99,27 @@ public class BookService {
         @Nullable MultipartFile introFile,
         MultipartFile coverFile
     ){
-        System.out.println("1111111111111");
-        System.out.println(coverFile.getOriginalFilename());
-        Path coverFolderLocation = Paths.get(cover_img_path);
-        Calendar c = Calendar.getInstance();
+        Path coverFolderLocation = Paths.get(cover_img_path); //커버 파일이 저장될 위치를 받아옴
+        Calendar c = Calendar.getInstance(); 
         String saveIntroFileName = "kybointro"+"_"; 
         String iFileName="";
-        System.out.println("aaaaa");
         if(introFile!=null){
-            Path introFolderLocation = Paths.get(intro_img_path);
-            String introOriginFileName = introFile.getOriginalFilename();
-            String[] iFile = introOriginFileName.split(("\\.")); 
-            String iExt = iFile[iFile.length-1]; 
-            System.out.println("bbbb");
+            Path introFolderLocation = Paths.get(intro_img_path); //책 설명이미지의 주소를 받아옴
+            String introOriginFileName = introFile.getOriginalFilename(); //설명 이미지의 파일이름을 가지고옴
+            String[] iFile = introOriginFileName.split(("\\."));  //파일이름에서 확장자를 제외하기위해 .을 기준으로 문자열을 나눔
+            String iExt = iFile[iFile.length-1]; //나눈 문자열의 마지막이 확장자를 뜻함
             for(int i=0;i<iFile.length-1;i++){
-                iFileName += iFile[i]; 
+                iFileName += iFile[i]; //확장자를 제외한 파일의 이름
             }
-            saveIntroFileName+=c.getTimeInMillis()+"."+iExt; 
-            Path introTargerFile = introFolderLocation.resolve(introFile.getOriginalFilename());
+            saveIntroFileName+=c.getTimeInMillis()+"."+iExt;  //저장될 파일 이름
+            Path introTargerFile = introFolderLocation.resolve(introOriginFileName); //파일 경로 + 저장될 파일 이름 합치기
+            //여기 saveIntroFileName이 들어가야하는데 잘못넣었음
             try{
                     Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
                 }catch(Exception e){e.printStackTrace();}
             }
-            System.out.println("ccccc");
 
-        String coverOriginFileName = coverFile.getOriginalFilename();
+        String coverOriginFileName = coverFile.getOriginalFilename(); 
             String[] cFile = coverOriginFileName.split(("\\.")); 
             String cExt = cFile[cFile.length-1]; 
             String cFileName = "";
@@ -133,7 +129,7 @@ public class BookService {
             String saveCoverFileName = "kybocover"+"_"; 
             saveCoverFileName+=c.getTimeInMillis()+"."+cExt; 
 
-            Path coverTargerFile = coverFolderLocation.resolve(coverFile.getOriginalFilename());
+            Path coverTargerFile = coverFolderLocation.resolve(coverFile.getOriginalFilename()); //여기 saveCoverFileName이 들어가야하는데 잘못넣었음
             try{
                 Files.copy(coverFile.getInputStream(), coverTargerFile, StandardCopyOption.REPLACE_EXISTING); 
             }catch(Exception e){e.printStackTrace();}
@@ -142,7 +138,6 @@ public class BookService {
         List<AutherInfoEntity> autherList = new ArrayList<AutherInfoEntity>();
         for(String name : split){
             AutherInfoEntity auther = new AutherInfoEntity();
-            System.out.println(name);
             auther = aRepository.findByAutherName(name);
             if(auther==null){
                 auther = new AutherInfoEntity();
@@ -151,7 +146,7 @@ public class BookService {
             }
             autherList.add(auther);
         }
-        PublisherInfoEntity pub = pRepository.findByPublisherName(pubName);
+        PublisherInfoEntity pub = pRepository.findByPublisherName(pubName); 
         if(pub==null){
             pub = new PublisherInfoEntity();
             pub.setPublisherName(pubName);
@@ -170,7 +165,6 @@ public class BookService {
             book = new BookInfoEntity(null, title, price, discount, delivery, date, pub.getPublisherSeq(), null, sales);
         }
         book = biRepo.save(book);
-        System.out.println(book);
         for(AutherInfoEntity a : autherList){
             BookWriterInfoEntity bwi = new BookWriterInfoEntity();
             bwi.setBookSeq(book.getBookSeq());
@@ -195,6 +189,5 @@ public class BookService {
         cover.setCoverImage(saveCoverFileName);
         cover.setCoverUri(cFileName);
         cover = cRepository.save(cover);
-
     }
 }

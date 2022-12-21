@@ -33,100 +33,29 @@ import org.springframework.core.io.UrlResource;
 
 @RestController
 public class FileAPIController {
-    // 파일 업로드, 다운로드는 어느 프로젝프든 거의 동일함. 복붙추천
+
     @Value("${file.image.cover}") String cover_img_path; //springframework.beans임
     @Value("${file.image.introduce}") String intro_img_path;
-    //이것도 DI임. 이미지 파일의 경로가 바뀌어도 application.properties만 고쳐주면 됨
-    // @Autowired TodoInfoService tService;
-    // @Autowired MemberService mService;
-
-    // @PutMapping("/{type}/upload") //todo이미지를 올릴것인지 file이미지를 올릴것인지
-    // public ResponseEntity < Object > putImageUpload(
-    //     @PathVariable String type,
-    //     @RequestPart MultipartFile file, //파일을 받는 객체. postman에 file이라고 변수 그대로 적어주어야함
-    //     @RequestParam Long seq
-    // ) {
-    //     Map < String, Object > map = new LinkedHashMap < > ();
-    //     System.out.println(file.getOriginalFilename()); //업로드 할 파일의 원본이름 확장자까지 출력
-    //     //Path - 폴더 및 파일의 위치를 나타내는 객체, Paths - 폴더 및 파일을 가져오고 경로를 만들기 위한 파일 유틸리티 클래스
-    //     Path folderLocation = null; //todo_img_path 문자열로부터 실제 폴더 경로를 가져옴.
-    //     if (type.equals("cover")) {
-    //         folderLocation = Paths.get(cover_img_path);
-            
-    //     } else if (type.equals("intro")) {
-    //         folderLocation = Paths.get(intro_img_path);
-    //     } else {
-    //         map.put("status", false);
-    //         map.put("message", "타입정보가 잘못되었습니다. ex:/cover/upload, /intro/upload");
-    //         return new ResponseEntity < > (map, HttpStatus.BAD_REQUEST);
-    //     }
-    //     String originFileName = file.getOriginalFilename();
-    //     String[] split = originFileName.split(("\\.")); //.을 기준으로 나눔
-    //     String ext = split[split.length - 1]; //확장자
-    //     String fileName = "";
-    //     for (int i = 0; i < split.length - 1; i++) {
-    //         fileName += split[i]; //원래 split[i]+"." 이렇게 해줘야함
-    //     }
-    //     String saveFileName = type + "_"; //보통 원본 이름을 저장하는것이아니라 시간대를 입력함
-    //     Calendar c = Calendar.getInstance();
-    //     saveFileName += c.getTimeInMillis() + "." + ext; // todo_161310135.png 이런식으로 저장됨
-
-    //     Path targetFile = folderLocation.resolve(saveFileName); //폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로 생성
-    //     try {
-    //         //Files는 파일 처리에 대한 유틸리티 클래스
-    //         //copy - 복사, file.getInputStream() - 파일을 열어서 파일의 내용을 읽는 준비
-    //         //targetFile 경로로, standardCopyOption.REPLACE_EXISTING - 같은 파일이 있다면 덮어쓰기.
-    //         Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     if (type.equals("todo")) {
-    //         CoverImageEntity data = new CoverImageEntity();
-    //         data.setFileName(saveFileName);
-    //         data.setUri(fileName);
-    //         tService.addTodoImage(data, seq);
-    //     } else if (type.equals("cover")) {
-    //         CoverImageEntity data = new CoverImageEntity();
-    //         data.setFileName(saveFileName);
-    //         data.setUri(fileName);
-    //         mService.addMemberImage(data, seq);
-
-    //     }
-    //     return new ResponseEntity < > (map, HttpStatus.OK);
-    // } //파일 업로드 메소드
 
     @Autowired CoverImageRepository cRepository;
     @Autowired BookIntroRepository iRepository;
 
     @GetMapping("/image/{type}/{file}")
-    public ResponseEntity<Resource> putImageUpload( //core.io.Resource import해야함
+    public ResponseEntity<Resource> getImagedownload( //core.io.Resource import해야함
         @PathVariable String file, HttpServletRequest request,
         @PathVariable String type
     ) throws Exception
     {
-        System.out.println(file);
         Path folderLocation = null;
         if (type.equals("cover")) {
-            folderLocation = Paths.get(cover_img_path);
+            folderLocation = Paths.get(cover_img_path); //저장할 파일의 타입이 위치한 경로를 찾아옴
         } else if (type.equals("intro")) {
-            folderLocation = Paths.get(intro_img_path);
+            folderLocation = Paths.get(intro_img_path); //저장할 파일의 타입이 위치한 경로를 찾아옴
         }
-        System.out.println(folderLocation);
-        // String[] split = file.split("\\.");
-        String ext = "jpg";
-        String exportName = file + "." + ext;
-        System.out.println(ext);
-        System.out.println(exportName);
-        // String filename = null;
-        // if (type.equals("cover")) {
-        //     filename = cRepository.findByCoverUri(filename).getCoverUri();
-        // } else if (type.equals("intro")) {
-        //     filename = iRepository.findByIntroImageUri(filename).getIntroImageUri();
-        // }
-        System.out.println(file);
-        // 내보낼 파일의 이름을 만든다. 
-        // 폴더 경로와 파일의 이름을 합쳐서 목표 파일의 경로를 만든다. 
-        Path targetFile = folderLocation.resolve(exportName);
+        String ext = "jpg"; //프론트에서 작업하기 쉽게하기위해 임의로 확장자 고정시킴.
+        //실제로는 이미지 주소에 확장자까지 적어서 값을 받아야하지만 uri만 입력해서 다운가능하게함 
+        String exportName = file + "." + ext; //내보낼 파일 이름(확장자까지)
+        Path targetFile = folderLocation.resolve(exportName); //파일경로 + 파일이름
         // 다운로드 가능한 형태로 변환하기 위한 Resource 객체 생성 
         Resource r = null;
         try {
@@ -149,14 +78,11 @@ public class FileAPIController {
             e.printStackTrace();
         }
         return ResponseEntity.ok()
-            // 응답의 코드를 200 OK로 설정하고 
-            // 산출한 타입을 응답에 맞는 형태로 변환 
+            // 응답의 코드를 200 OK로 설정하고  산출한 타입을 응답에 맞는 형태로 변환 
             .contentType(MediaType.parseMediaType(contentType))
-            // 내보낼 내용의 타입을 설정 (파일), 
-            // attachment; filename*=\""+r.getFilename()+"\" 요청한 쪽에서 다운로드 한 
-            // 파일의 이름을 결정 
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(exportName, "UTF-8") + "\"")
+            // 내보낼 내용의 타입을 설정 (파일),  attachment; filename=\""+r.getFilename()+"\" 요청한 쪽에서 다운로드 한 파일의 이름을 결정 
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(contentType, "UTF-8") + "\"")
             .body(r);
-        // 변환된 파일을 ResponseEntity에 추가 }
+            // 변환된 파일을 ResponseEntity에 추가 
     }
 }
