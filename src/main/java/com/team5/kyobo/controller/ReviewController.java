@@ -1,6 +1,5 @@
 package com.team5.kyobo.controller;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ public class ReviewController {
         @PageableDefault(size=10, sort="reviewDate",direction = Sort.Direction.DESC)  final Pageable page
     ){
         Map<String, Object> map =rService.showReview(seq, page);
-        // System.out.println(map);
         return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
     }
 }

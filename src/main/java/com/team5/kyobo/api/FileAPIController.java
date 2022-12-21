@@ -41,16 +41,21 @@ public class FileAPIController {
     @Autowired BookIntroRepository iRepository;
 
     @GetMapping("/image/{type}/{file}")
-    public ResponseEntity<Resource> getImagedownload( //core.io.Resource import해야함
+    public ResponseEntity<Object> getImagedownload( //core.io.Resource import해야함
         @PathVariable String file, HttpServletRequest request,
         @PathVariable String type
     ) throws Exception
     {
+        Map<String, Object> map = new LinkedHashMap<>();
         Path folderLocation = null;
         if (type.equals("cover")) {
             folderLocation = Paths.get(cover_img_path); //저장할 파일의 타입이 위치한 경로를 찾아옴
         } else if (type.equals("intro")) {
             folderLocation = Paths.get(intro_img_path); //저장할 파일의 타입이 위치한 경로를 찾아옴
+        }else{
+            map.put("status", false);
+            map.put("message", "타입이 올바르지 않습니다. (예시 : cover, intro)");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
         String ext = "jpg"; //프론트에서 작업하기 쉽게하기위해 임의로 확장자 고정시킴.
         //실제로는 이미지 주소에 확장자까지 적어서 값을 받아야하지만 uri만 입력해서 다운가능하게함 

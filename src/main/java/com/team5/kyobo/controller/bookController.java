@@ -34,7 +34,6 @@ public class bookController {
     ){
         Map<String, Object> map = bService.showDetailBookInfo(seq);
         if((boolean) map.get("status")){
-            // map.put("review", rService.showReview(seq, page));
         }
         return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
     }
