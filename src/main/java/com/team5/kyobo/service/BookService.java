@@ -116,8 +116,8 @@ public class BookService {
             //여기 saveIntroFileName이 들어가야하는데 잘못넣었음
             try{
                     Files.copy(introFile.getInputStream(), introTargerFile, StandardCopyOption.REPLACE_EXISTING); 
-                }catch(Exception e){e.printStackTrace();}
-            }
+            }catch(Exception e){e.printStackTrace();}
+        }
 
         String coverOriginFileName = coverFile.getOriginalFilename(); 
             String[] cFile = coverOriginFileName.split(("\\.")); 
